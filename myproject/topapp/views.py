@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Note, Company
+from .forms import ModelForm
 
 
 def fullname(request):
@@ -13,10 +14,20 @@ def poem(request):
     return HttpResponse(companies)
 
 
-def add_note(request):
-    title = request.POST.get('title')
-    text = request.POST.get('text')
-    note = Note(title=title, text=text)
-    note.save()
+def create_record(request):
+    if request.method == 'POST':
+        form = ModelForm(request.POST)
 
-    return redirect('index')
+        title = request.POST.get('title')
+        text = request.POST.get('text')
+        note = Note(title=title, text=text)
+        note.save()
+        print('success')
+    else:
+        form = ModelForm()
+
+    return render(request, 'add_note.html', {'form': form})
+
+
+def add_note(request):
+    return redirect('create_record')
